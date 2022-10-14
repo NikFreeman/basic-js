@@ -1,8 +1,19 @@
-function isMAC48Address(n) {
-  //throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
-  let regexp = /^[0-9a-f]{2}(-[0-9a-f]{2}){5}$/i;
-  return regexp.test(n);
+class DepthCalculator {
+  calculateDepth(arr) {
+    //throw new NotImplementedError('Not implemented');
+    // remove line with error and write your code here
+    let count = 1,
+      depth = 0;
+    for (let i of arr) {
+      if (Array.isArray(i)) {
+        count = this.calculateDepth(i);
+        if (depth < count) depth = count;
+      }
+    }
+    return ++depth;
+  }
 }
 
-console.log(isMAC48Address("00-1B-63-84-45-E6"));
+const depthCalc = new DepthCalculator();
+console.log(depthCalc.calculateDepth([[[]], [[[[]]]]]));
+//console.log(depthCalc.DepthCalculator([1, [8, [[]]], [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]], []]]], []]]]]]]]], []]]], []]]]]]]]]], 2, 3, [8, [[[[[[[[[[[[[[]]]]]]]]]]]]]]], [8, [[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]], 4, 5, ["6575", ["adas", ["dfg", [0]]]],]));
