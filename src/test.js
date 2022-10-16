@@ -1,43 +1,48 @@
 class VigenereCipheringMachine {
   constructor(direct = true) {
-    console.debug("constructor");
-    this._direct = direct;
+    this.direction = direct;
     this._alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    this._errorMsg = "Incorrect arguments!";
   }
-
-  _converter(message, keyword, encrypt = true) {
-    if (!message || !keyword) {
-      throw new Error(this._errorMsg);
-    } else {
-      const msg = message.toUpperCase().split("");
-      const key = keyword
-        .repeat(Math.ceil(message.length / keyword.length))
-        .toUpperCase();
-
-      let i = 0;
-
-      const newMsg = msg.reduce((resultMsg, currentLetter) => {
-        if (this._alpha.includes(currentLetter)) {
-          const letterIndexInAlpha = this._alpha.indexOf(key[i++]);
-          const newAlpha = `${this._alpha.slice(
-            letterIndexInAlpha
-          )}${this._alpha.slice(0, letterIndexInAlpha)}`;
-          return encrypt
-            ? `${resultMsg}${newAlpha[this._alpha.indexOf(currentLetter)]}`
-            : `${resultMsg}${this._alpha[newAlpha.indexOf(currentLetter)]}`;
+  _handlerEncrypt(message, key, direct = true) {
+    if (!message || !key) throw new Error(`Incorrect arguments!`);
+    else {
+      let messageArray = message.toUpperCase().split("");
+      let keyArray = key
+        .repeat(Math.ceil(message.length / key.length))
+        .toUpperCase()
+        .split("");
+      let keyIndex = 0;
+      const msg = messageArray.reduce((result, elem) => {
+        if (this._alpha.includes(elem)) {
+          let symbolIndex;
+          let indexKey = this._alpha.indexOf(keyArray[keyIndex++]);
+          let currentAlpha = this._alpha
+            .slice(indexKey)
+            .concat(this._alpha.slice(0, indexKey));
+          if (direct) {
+            symbolIndex = this._alpha.indexOf(elem);
+            result.push(currentAlpha[symbolIndex]);
+          } else {
+            symbolIndex = currentAlpha.indexOf(elem);
+            result.push(this._alpha[symbolIndex]);
+          }
+          return result;
         } else {
-          return `${resultMsg}${currentLetter}`;
+          result.push(elem);
+          return result;
         }
-      }, "");
-
-      return this.direct ? newMsg : newMsg.split("").reverse().join("");
+      }, []);
+      return this.direction ? msg.join("") : msg.reverse().join("");
     }
   }
 
-  encrypt = (message, keyword) => this._converter(message, keyword);
-  decrypt = (message, keyword) => this._converter(message, keyword, false);
-}
+  encrypt = (message, key) => this._handlerEncrypt(message, key, true);
 
+  decrypt = (message, key) => this._handlerEncrypt(message, key, false);
+}
+const cryptMachine = new VigenereCipheringMachine(true);
+console.log(cryptMachine.encrypt("attack at dawn!", "alphonse"));
+console.log(cryptMachine.decrypt("AEIHQX SX DLLU!", "alphonse"));
 const reverseMachine = new VigenereCipheringMachine(false);
-console.log(reverseMachine._direct);
+console.log(reverseMachine.encrypt("attack at dawn!", "alphonse"));
+console.log(reverseMachine.decrypt("AEIHQX SX DLLU!", "alphonse"));
